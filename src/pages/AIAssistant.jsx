@@ -149,7 +149,7 @@ export default function AIAssistant() {
   const [messages, setMessages] = useState([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingText, setStreamingText] = useState("");
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem("openai_api_key") || "");
+  const [apiKey, setApiKey] = useState(() => localStorage.getItem("anthropic_api_key") || "");
   const [showSettings, setShowSettings] = useState(false);
   const [error, setError] = useState(null);
   const abortRef = useRef(null);
@@ -170,9 +170,9 @@ export default function AIAssistant() {
   function saveApiKey(key) {
     setApiKey(key);
     if (key) {
-      localStorage.setItem("openai_api_key", key);
+      localStorage.setItem("anthropic_api_key", key);
     } else {
-      localStorage.removeItem("openai_api_key");
+      localStorage.removeItem("anthropic_api_key");
     }
   }
 
@@ -222,7 +222,7 @@ export default function AIAssistant() {
   const sendMessage = useCallback(async (userText) => {
     if (!apiKey) {
       setShowSettings(true);
-      setError("Please enter your OpenAI API key to use the AI Assistant.");
+      setError("Please enter your Anthropic API key to use the AI Assistant.");
       return;
     }
     setError(null);
@@ -233,26 +233,25 @@ export default function AIAssistant() {
     const newMessages = [...messages, { role: "user", content: userText }];
     setMessages(newMessages);
 
-    const apiMessages = [
-      { role: "system", content: systemPrompt },
-      ...newMessages.map((m) => ({ role: m.role, content: m.content })),
-    ];
+    const apiMessages = newMessages.map((m) => ({ role: m.role, content: m.content }));
 
     const controller = new AbortController();
     abortRef.current = controller;
 
     try {
-      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true",
         },
         body: JSON.stringify({
-          model: "gpt-4o",
+          model: "claude-sonnet-4-5-20250929",
+          system: systemPrompt,
           messages: apiMessages,
           stream: true,
-          temperature: 0.7,
           max_tokens: 4096,
         }),
         signal: controller.signal,
@@ -278,14 +277,12 @@ export default function AIAssistant() {
 
         for (const line of lines) {
           const trimmed = line.trim();
-          if (!trimmed || !trimmed.startsWith("data: ")) continue;
+          if (!trimmed.startsWith("data: ")) continue;
           const data = trimmed.slice(6);
-          if (data === "[DONE]") break;
           try {
             const parsed = JSON.parse(data);
-            const delta = parsed.choices?.[0]?.delta?.content;
-            if (delta) {
-              fullText += delta;
+            if (parsed.type === "content_block_delta" && parsed.delta?.text) {
+              fullText += parsed.delta.text;
               setStreamingText(fullText);
             }
           } catch {
@@ -373,7 +370,7 @@ export default function AIAssistant() {
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
               <Key className="w-4 h-4 text-indigo-600" />
-              OpenAI API Configuration
+              Anthropic API Configuration
             </h3>
             <button onClick={() => setShowSettings(false)} className="text-gray-400 hover:text-gray-600">
               <X className="w-4 h-4" />
@@ -384,7 +381,7 @@ export default function AIAssistant() {
               type="password"
               value={apiKey}
               onChange={(e) => saveApiKey(e.target.value)}
-              placeholder="sk-..."
+              placeholder="sk-ant-..."
               className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
             />
             {apiKey && (
@@ -397,7 +394,7 @@ export default function AIAssistant() {
             )}
           </div>
           <p className="text-xs text-gray-500 mt-2">
-            Your API key is stored locally in your browser and sent directly to OpenAI. It is never stored on any server.
+            Your API key is stored locally in your browser and sent directly to Anthropic. It is never stored on any server.
           </p>
         </div>
       )}
@@ -550,7 +547,7 @@ export default function AIAssistant() {
                       className="mt-4 flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
                     >
                       <Key className="w-4 h-4" />
-                      Set your OpenAI API key to get started
+                      Set your Anthropic API key to get started
                     </button>
                   )}
                 </div>
@@ -634,7 +631,7 @@ export default function AIAssistant() {
                   onChange={(e) => setInput(e.target.value)}
                   placeholder={
                     !apiKey
-                      ? "Set your OpenAI API key first..."
+                      ? "Set your Anthropic API key first..."
                       : messages.length > 0
                       ? "Ask a follow-up or refine your learning goal..."
                       : "Describe your learning goal (e.g., prepare for a feature launch)..."
