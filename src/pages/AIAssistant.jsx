@@ -143,11 +143,11 @@ export default function AIAssistant() {
 
         {/* Right: Embedded AI Assistant */}
         <div className="lg:col-span-2 flex flex-col">
-          <div className="bg-white rounded-xl shadow-sm border overflow-hidden min-h-[600px]">
+          <div className="bg-white rounded-xl shadow-sm border overflow-hidden flex-1">
             <iframe
               src="https://apurplewonderwall.lovable.app/"
               title="AI Learning Assistant"
-              className="w-full h-full min-h-[600px] border-0"
+              className="w-full h-full border-0"
               allow="microphone; camera"
             />
           </div>
