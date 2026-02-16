@@ -6,6 +6,7 @@ import ContentLibrary from "./pages/ContentLibrary";
 import SkillsRepository from "./pages/SkillsRepository";
 import LearnerProfiles from "./pages/LearnerProfiles";
 import LearningPath from "./pages/LearningPath";
+import AIAssistant from "./pages/AIAssistant";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
             <Route path="skills" element={<SkillsRepository />} />
             <Route path="learners" element={<LearnerProfiles />} />
             <Route path="learning-path" element={<LearningPath />} />
+            <Route path="ai-assistant" element={<AIAssistant />} />
           </Route>
         </Routes>
       </HashRouter>

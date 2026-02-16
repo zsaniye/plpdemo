@@ -8,6 +8,7 @@ import {
   Route,
   UserCircle,
   ChevronDown,
+  Sparkles,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -17,6 +18,7 @@ const navItems = [
   { to: "/skills", label: "Skills Repository", icon: Award },
   { to: "/learners", label: "Learner Profiles", icon: Users },
   { to: "/learning-path", label: "Learning Path", icon: Route },
+  { to: "/ai-assistant", label: "AI Assistant", icon: Sparkles },
 ];
 
 export default function Layout() {
