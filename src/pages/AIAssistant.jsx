@@ -3,7 +3,15 @@ import {
   Sparkles,
   Target,
   User,
+  Lightbulb,
 } from "lucide-react";
+
+const searchTips = [
+  { label: "Feature Launch", text: "Prepare my team with the right skills for a successful go-to-market strategy." },
+  { label: "AI Upskilling", text: "Upskill in AI and generative AI tools to become more effective in my role." },
+  { label: "Leadership Growth", text: "Develop management and strategic thinking skills for a leadership role." },
+  { label: "Skill Gap Closure", text: "Close my skill gaps and reach an advanced level in core competencies." },
+];
 
 export default function AIAssistant() {
   const { selectedLearner, profiles, setSelectedLearnerId } = useApp();
@@ -107,6 +115,29 @@ export default function AIAssistant() {
                 )}
               </div>
             )}
+          </div>
+
+          {/* Search Tips */}
+          <div className="bg-white rounded-xl shadow-sm border p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <Lightbulb className="w-4 h-4 text-amber-500" />
+              <h3 className="text-sm font-semibold text-gray-700">Search Tips</h3>
+            </div>
+            <div className="space-y-2">
+              {searchTips.map((tip) => (
+                <div
+                  key={tip.label}
+                  className="p-2.5 rounded-lg border border-gray-200 bg-gray-50"
+                >
+                  <div className="text-sm font-medium text-gray-800">
+                    {tip.label}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-0.5">
+                    {tip.text}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
